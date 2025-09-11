@@ -9,6 +9,7 @@ import (
 
 	"signaling-server/internal/redis"
 
+	"github.com/go-playground/validator/v10" // Убедитесь, что импортировано
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -21,11 +22,25 @@ func Handler(c *websocket.Conn) {
 	var init InitMessage
 	if err := c.ReadJSON(&init); err != nil {
 		_ = c.WriteMessage(websocket.TextMessage, []byte(`{"type":"error","msg":"invalid initial message"}`))
+		logger.Log.Error("Failed to read initial JSON", zap.Error(err))
 		return
 	}
 
+	// Логируем полученные данные для отладки
+	logger.Log.Info("Received init message",
+		zap.String("keyPhrase", init.KeyPhrase),
+		zap.String("name", init.Name),
+		zap.Int("limit", init.Limit))
+
 	if err := validate.Struct(init); err != nil {
-		_ = c.WriteMessage(websocket.TextMessage, []byte(`{"type":"error","msg":"invalid keyPhrase or name"}`))
+		// Улучшенное логирование: выводим детали ошибки
+		validationErrors := err.(validator.ValidationErrors)
+		logger.Log.Error("Validation failed",
+			zap.Errors("errors", []error{err}),
+			zap.Any("details", validationErrors))
+
+		errorMsg := fmt.Sprintf(`{"type":"error","msg":"invalid keyPhrase or name: %v"}`, err.Error())
+		_ = c.WriteMessage(websocket.TextMessage, []byte(errorMsg))
 		return
 	}
 
@@ -104,17 +119,69 @@ func Handler(c *websocket.Conn) {
 	for {
 		_, msg, err := c.ReadMessage()
 		if err != nil {
+			logger.Log.Warn("ReadMessage error", zap.Error(err), zap.String("client", clientID))
 			break
 		}
 
 		var parsed SignalMessage
 		if err := json.Unmarshal(msg, &parsed); err != nil {
+			logger.Log.Warn("Failed to unmarshal message", zap.Error(err), zap.ByteString("msg", msg))
 			continue
 		}
 
 		switch parsed.Type {
-		case "msg", "offer", "answer", "candidate", "call_start", "call_end":
-			broadcastToRoom(keyPhrase, clientID, msg)
+		case "msg", "offer", "answer", "candidate":
+			// Обогащаем сообщение полем from
+			enrichedMsg := make(map[string]interface{})
+			if err := json.Unmarshal(msg, &enrichedMsg); err == nil {
+				enrichedMsg["from"] = name
+				enrichedMsgBytes, _ := json.Marshal(enrichedMsg)
+				broadcastToRoom(keyPhrase, clientID, enrichedMsgBytes)
+			} else {
+				broadcastToRoom(keyPhrase, clientID, msg)
+			}
+
+		case "call_initiate", "call_accept", "call_end":
+			// Обогащаем сообщение полем from
+			enrichedMsg := make(map[string]interface{})
+			if err := json.Unmarshal(msg, &enrichedMsg); err == nil {
+				enrichedMsg["from"] = name
+				enrichedMsgBytes, _ := json.Marshal(enrichedMsg)
+				// Broadcast только если не control-сообщение от отправителя (прерываем цикл)
+				if parsed.Type != "call_end" {
+					broadcastToRoom(keyPhrase, clientID, enrichedMsgBytes)
+				} else {
+					// Для call_end: broadcast всем, кроме отправителя
+					sentCount := 0
+					items, err := redis.GetClient().LRange(redis.Ctx(), roomKey, 0, -1).Result()
+					if err != nil {
+						logger.Log.Error("failed to read room members from redis", zap.Error(err), zap.String("room", keyPhrase))
+						break
+					}
+					for _, raw := range items {
+						var meta map[string]string
+						if err := json.Unmarshal([]byte(raw), &meta); err != nil {
+							continue
+						}
+						if meta["id"] == clientID { // Пропускаем отправителя
+							continue
+						}
+						conn := getConnection(meta["id"])
+						if conn == nil {
+							continue
+						}
+						if err := conn.WriteMessage(websocket.TextMessage, enrichedMsgBytes); err != nil {
+							logger.Log.Error("broadcast write error", zap.Error(err), zap.String("client", meta["id"]), zap.String("room", keyPhrase))
+						} else {
+							sentCount++
+						}
+					}
+					logger.Log.Info("Broadcast call_end (excluding sender)", zap.String("room", keyPhrase), zap.Int("sent", sentCount))
+				}
+				// НЕ сохраняем call_end в pending (избегаем накопления)
+			} else {
+				broadcastToRoom(keyPhrase, clientID, msg)
+			}
 
 		case "signal":
 			sentCount := broadcastToRoom(keyPhrase, clientID, msg)
