@@ -1,0 +1,29 @@
+app_name: SignalingServer
+port: 8080
+fiber_read_timeout: 10s
+fiber_write_timeout: 10s
+fiber_body_limit: 4194304
+log_file_path: logs/server.log
+metrics_path: /metrics
+allowed_origins:
+  - http://localhost:3000
+allow_methods:
+  - GET
+  - POST
+  - HEAD
+  - OPTIONS
+allowed_headers:
+  - Origin
+  - Content-Type
+  - Accept
+allow_credentials: true
+rate_limit_max: 100
+rate_limit_expiration: 1m
+redis:
+  host: localhost:6379
+  password: ""
+  db: 0
+  ttl: 24h
+  pubsub_channel: room_events
+default_room_limit: 2
+room_key_prefix: "room:"

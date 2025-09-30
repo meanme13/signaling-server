@@ -1,0 +1,36 @@
+{"level":"info","ts":1759168083.689575,"caller":"redis/redis.go:45","msg":"Redis client initialized","host":"localhost:6379","db":0}
+{"level":"info","ts":1759168083.693674,"caller":"redis/pubsub.go:44","msg":"subscribed to Redis channel","channel":"room_events"}
+{"level":"info","ts":1759168083.693866,"caller":"middleware/middleware.go:20","msg":"registering CORS middleware","allowed_origins":["http://localhost:3000"]}
+{"level":"info","ts":1759168083.693991,"caller":"middleware/middleware.go:37","msg":"registering rate limiter middleware","max_requests":100,"expiration":60}
+{"level":"info","ts":1759168083.694459,"caller":"server/server.go:44","msg":"server starting","addr":":8080"}
+{"level":"info","ts":1759168086.904205,"caller":"server/server.go:56","msg":"received shutdown signal, starting graceful shutdown","reason":"context canceled"}
+{"level":"info","ts":1759168086.9044428,"caller":"server/server.go:62","msg":"shutting down server..."}
+{"level":"info","ts":1759168086.904735,"caller":"server/server.go:72","msg":"server exited gracefully"}
+{"level":"info","ts":1759168086.905041,"caller":"redis/pubsub.go:87","msg":"unsubscribed from Redis channel"}
+{"level":"info","ts":1759168813.6006,"caller":"redis/redis.go:45","msg":"Redis client initialized","host":"localhost:6379","db":0}
+{"level":"info","ts":1759168813.603831,"caller":"redis/pubsub.go:44","msg":"subscribed to Redis channel","channel":"room_events"}
+{"level":"info","ts":1759168813.60397,"caller":"middleware/middleware.go:20","msg":"registering CORS middleware","allowed_origins":["http://localhost:3000"]}
+{"level":"info","ts":1759168813.604092,"caller":"middleware/middleware.go:37","msg":"registering rate limiter middleware","max_requests":100,"expiration":60}
+{"level":"info","ts":1759168813.604186,"caller":"server/server.go:44","msg":"server starting","addr":":8080"}
+{"level":"info","ts":1759168817.766732,"caller":"server/server.go:56","msg":"received shutdown signal, starting graceful shutdown","reason":"context canceled"}
+{"level":"info","ts":1759168817.766943,"caller":"server/server.go:62","msg":"shutting down server..."}
+{"level":"info","ts":1759168817.8682492,"caller":"server/server.go:72","msg":"server exited gracefully"}
+{"level":"info","ts":1759168817.86891,"caller":"redis/pubsub.go:87","msg":"unsubscribed from Redis channel"}
+{"level":"info","ts":1759170006.862092,"caller":"redis/redis.go:45","msg":"Redis client initialized","host":"localhost:6379","db":0}
+{"level":"info","ts":1759170006.8655,"caller":"redis/pubsub.go:44","msg":"subscribed to Redis channel","channel":"room_events"}
+{"level":"info","ts":1759170006.865689,"caller":"middleware/middleware.go:20","msg":"registering CORS middleware","allowed_origins":["http://localhost:3000"]}
+{"level":"info","ts":1759170006.865851,"caller":"middleware/middleware.go:37","msg":"registering rate limiter middleware","max_requests":100,"expiration":60}
+{"level":"info","ts":1759170006.865987,"caller":"server/server.go:44","msg":"server starting","addr":":8080"}
+{"level":"info","ts":1759170010.403789,"caller":"server/server.go:56","msg":"received shutdown signal, starting graceful shutdown","reason":"context canceled"}
+{"level":"info","ts":1759170010.4039402,"caller":"server/server.go:62","msg":"shutting down server..."}
+{"level":"info","ts":1759170010.504407,"caller":"server/server.go:72","msg":"server exited gracefully"}
+{"level":"info","ts":1759170010.505075,"caller":"redis/pubsub.go:87","msg":"unsubscribed from Redis channel"}
+{"level":"info","ts":1759172000.441642,"caller":"redis/redis.go:45","msg":"Redis client initialized","host":"localhost:6379","db":0}
+{"level":"info","ts":1759172000.4461608,"caller":"redis/pubsub.go:44","msg":"subscribed to Redis channel","channel":"room_events"}
+{"level":"info","ts":1759172000.4463081,"caller":"middleware/middleware.go:20","msg":"registering CORS middleware","allowed_origins":["http://localhost:3000"]}
+{"level":"info","ts":1759172000.446454,"caller":"middleware/middleware.go:54","msg":"registering rate limiter middleware","max_requests":100,"expiration":60}
+{"level":"info","ts":1759172000.446558,"caller":"server/server.go:44","msg":"server starting","addr":":8080"}
+{"level":"info","ts":1759172002.306766,"caller":"server/server.go:56","msg":"received shutdown signal, starting graceful shutdown","reason":"context canceled"}
+{"level":"info","ts":1759172002.306894,"caller":"server/server.go:62","msg":"shutting down server..."}
+{"level":"info","ts":1759172002.3071811,"caller":"server/server.go:72","msg":"server exited gracefully"}
+{"level":"info","ts":1759172002.307471,"caller":"redis/pubsub.go:87","msg":"unsubscribed from Redis channel"}
